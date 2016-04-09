@@ -5,9 +5,9 @@ import datetime
 from itertools import tee, islice, chain, izip
 
 ############## Import Raw datafile ##############
-%cd "/Users/coreyjackson/Dropbox/ZooSOCS dropbox/Papers/CSCW 2017 (AnonWork)/RawData/Archive"
+%cd "PATH TO FOLDER"
 
-raw_data = pd.read_csv('AsteroidZooClassificationsAnonWork112615.csv') # CHANGE NAME OF .CSV FILE
+raw_data = pd.read_csv('FILE NAME') # CHANGE NAME OF .CSV FILE
 # Rename columns 
 anon_population = pd.DataFrame(raw_data, columns = ['_id', 'created_at', 'favorite', 'subject_ids', 'tutorial','user_id','user_ip','user_name'])
 del raw_data
@@ -101,7 +101,7 @@ anon_population['Session'] = session_no
 #anon_population.Session = anon_population.Session.shift(-1)
 
 # Export dataframe
-%cd "/Users/coreyjackson/Dropbox/ZooSOCS dropbox/Papers/CSCW 2017 (AnonWork)/RawData/DataFiles"
+%cd "PATH TO FOLDER"
 
 anon_population.to_csv('Asteroid_Anon.csv') #Change File name to project name. 
 
