@@ -104,6 +104,6 @@ anon_population['Session'] = session_no
 # Export dataframe
 %cd "PATH TO FOLDER"
 
-anon_population.to_csv('Asteroid_Anon.csv') #Change File name to project name. 
+anon_population.to_csv('FILE NAME') #Change File name to project name. 
 
 
