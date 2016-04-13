@@ -87,10 +87,6 @@ for i,j,l,m in zip(ip, ip[1:], time, time[1:]):
     session = 1
     session_no.append(session)
 
-  #elif i != j and l < datetime.timedelta(minutes=30):  
-  #  session = 1
-  #  session_no.append(session)
-
 # Check length of anon file and session list 
 len(anon_population)
 len(session_no)           
