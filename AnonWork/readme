@@ -1,1 +1,3 @@
 This is a readme file for the Anonymous Work code
+
+1. Inside the AnonWork Folder you'll find the Python code import for the dataset. It was exported from the mongodata base. We'll run the code over all 10 projects we want to analyze for the paper  
