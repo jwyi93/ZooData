@@ -75,7 +75,7 @@ ip_work_Session = ddply(Anon, c("user_ip","Session"), summarize,
 	Registered = length(which(!is.na(user_name))),
 	Earliest = min(datetime),
 	Recent = max(datetime),
-	History = (max(datetime) - min(datetime)),
+	Session_Length = (max(datetime) - min(datetime))
 	)
 
 ip_work_Session$Earliest <- as.POSIXct(ip_work_Session$Earliest, format="%Y-%m-%d %H:%M:%S")
@@ -90,10 +90,8 @@ ip_work = ddply(Anon, c("user_ip"), summarize,
 	Earliest = min(datetime),
 	Recent = max(datetime),
 	Seniority = (max(datetime) - min(datetime)),
-	Joined_After = as.difftime(min(datetime) - start_date, unit="days")
+	Joined_After = as.difftime(min(datetime) - start_date, unit=days)
 	)
-
-# Seniority = as.difftime(min(datetime) - start_date, unit="days")
 
 ip_work$Earliest <- as.POSIXct(ip_work$Earliest, format="%Y-%m-%d %H:%M:%S")
 ip_work$Recent <- as.POSIXct(ip_work$Recent, format="%Y-%m-%d %H:%M:%S")
