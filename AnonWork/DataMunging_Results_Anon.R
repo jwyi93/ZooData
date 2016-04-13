@@ -11,16 +11,14 @@ library(reshape2)
 # Set working directory to same directory where files are exported to in Python code
 setwd("~PATH TO FOLDER")
 
-# Import Dataset
-Anon <- read.csv("~PATH TO FOLDER")
-project = Higgs Hunters
+# Import Dataset from .csv file
+Anon <- read.csv("")
+project = Asteroid Zoo # Change Name to current project
 
 ############ Data Munging ############
 # Change blank fields in user_name to NA
 Anon$user_name[Anon$user_name ==""]  <- NA 
 # Change datetime to a datetime variable R can recognize
-Anon$datetime3 <- strptime(x = as.character(Anon$datetime),
-        format = "%Y-%m-%d %H:%M:%S")
 
 ################################################
 #											   #
@@ -67,11 +65,23 @@ dev.off()
 ############ User Level Analysis ############
 
 # Summary Information by user
-ip_work = ddply(Anon, c("user_ip"), summarize, 
-	annotations = length(user_ip),
+ip_work_Session = ddply(Anon, c("user_ip","Session"), summarize,
+	Annotations = length(user_name),
 	sessions=max(Session),
 	Anon_Annotations = length(which(is.na(user_name))),
-	Registered = length(which(!is.na(user_name))))
+	Registered = length(which(!is.na(user_name)))
+	)
+
+ip_work = ddply(Anon, c("user_ip"), summarize,
+	Annotations = length(user_name),
+	sessions=max(Session),
+	Anon_Annotations = length(which(is.na(user_name))),
+	Registered = length(which(!is.na(user_name)))
+	)
+
+# Calculate Time
+Anon$datetime3 <- strptime(x = as.character(Anon$datetime),
+        format = "%Y-%m-%d %H:%M:%S")
 
 # Export Plot
 pdf("NAME.pdf", height=5, width=10) # Need to change plot name
