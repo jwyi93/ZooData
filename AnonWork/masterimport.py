@@ -101,6 +101,14 @@ del anon_population['datetime2']
 anon_population['Session'] = session_no
 #anon_population.Session = anon_population.Session.shift(-1)
 
+time = anon_population['timespent']
+time_sec = []
+for i in time:
+  timeseconds = i.total_seconds()
+  time_sec.append(timeseconds)
+anon_population['Time_Seconds'] = time_sec
+
+
 # Export dataframe
 %cd "PATH TO FOLDER"
 
