@@ -1,8 +1,0 @@
-#Anonymous Work code
-
-Two files
-
-1. Import and Calculate (ZooData/AnonWork/masterimport.py) This file imports the data from Mongodb as .csv and computes 
-    annotation number, session number, and time between sessions. 
-    
-2. ZooData/AnonWork/DataMunging_Results_Anon.R
