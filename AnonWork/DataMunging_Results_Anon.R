@@ -9,10 +9,10 @@ library(plyr)
 library(reshape2)
 
 # Set working directory to same directory where files are exported to in Python code
-setwd("~/Dropbox/ZooSOCS dropbox/Papers/CSCW 2017 (AnonWork)/RawData/DataFiles")
+setwd("~PATH TO FOLDER")
 
 # Import Dataset
-Higgs_Anon <- read.csv("~/Dropbox/ZooSOCS dropbox/Papers/CSCW 2017 (AnonWork)/RawData/DataFiles/Higgs_Anon.csv") # Might take some time
+Higgs_Anon <- read.csv("~PATH TO FOLDER") # Might take some time
 project = Higgs Hunters
 
 ############ Data Munging ############
