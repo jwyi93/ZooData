@@ -2,11 +2,12 @@
 install.packages("ggplot2")
 install.packages("plyr")
 install.packages("reshape2")
-
+install.packages("lubridate")
 # Load libraries
 library(ggplot2)
 library(plyr)
 library(reshape2)
+library(lubridate)
 
 # Set working directory to same directory where files are exported to in Python code
 setwd("~PATH TO FOLDER")
@@ -63,21 +64,40 @@ pdf("NAME.pdf", height=5, width=10) # Need to change plot name
 dev.off()
 
 ############ User Level Analysis ############
+start_date = min(ip_work$Earliest, na.rm=TRUE)
+Anon$datetime <- as.POSIXct(Anon$datetime, format="%Y-%m-%d %H:%M:%S")
 
-# Summary Information by user
+# Calculate user history work by session
 ip_work_Session = ddply(Anon, c("user_ip","Session"), summarize,
 	Annotations = length(user_name),
 	sessions=max(Session),
 	Anon_Annotations = length(which(is.na(user_name))),
-	Registered = length(which(!is.na(user_name)))
+	Registered = length(which(!is.na(user_name))),
+	Earliest = min(datetime),
+	Recent = max(datetime),
+	History = (max(datetime) - min(datetime)),
 	)
 
+ip_work_Session$Earliest <- as.POSIXct(ip_work_Session$Earliest, format="%Y-%m-%d %H:%M:%S")
+ip_work_Session$Recent <- as.POSIXct(ip_work_Session$Recent, format="%Y-%m-%d %H:%M:%S")
+
+# Calculate user history
 ip_work = ddply(Anon, c("user_ip"), summarize,
 	Annotations = length(user_name),
 	sessions=max(Session),
 	Anon_Annotations = length(which(is.na(user_name))),
-	Registered = length(which(!is.na(user_name)))
+	Registered = length(which(!is.na(user_name))),
+	Earliest = min(datetime),
+	Recent = max(datetime),
+	Seniority = (max(datetime) - min(datetime)),
+	Joined_After = as.difftime(min(datetime) - start_date, unit="days")
 	)
+
+# Seniority = as.difftime(min(datetime) - start_date, unit="days")
+
+ip_work$Earliest <- as.POSIXct(ip_work$Earliest, format="%Y-%m-%d %H:%M:%S")
+ip_work$Recent <- as.POSIXct(ip_work$Recent, format="%Y-%m-%d %H:%M:%S")
+ip_work$Membership <- difftime(ip_work$Earliest-ip_work$Recent)
 
 # Calculate Time
 Anon$datetime3 <- strptime(x = as.character(Anon$datetime),
