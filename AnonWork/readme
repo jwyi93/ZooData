@@ -1,4 +1,8 @@
-This is a readme file for the Anonymous Work code
+# Anonymous Work code
 
-1. Inside the AnonWork Folder you'll find the Python code import for the dataset. It was exported from the mongodata base. 
-We'll run the code over all 10 projects we want to analyze for the paper. The analysis will likely take place in R.
+Two files
+
+1. Import and Calculate (ZooData/AnonWork/masterimport.py) This file imports the data from Mongodb as .csv and computes 
+    annotation number, session number, and time between sessions. 
+    
+2. ZooData/AnonWork/DataMunging_Results_Anon.R
