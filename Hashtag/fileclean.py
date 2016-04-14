@@ -38,6 +38,7 @@ test_data['name'].value_counts()
 raw_data['project_id'].value_counts()
 
 ## TF-IDF functions
+# http://aimotion.blogspot.com/2011/12/machine-learning-with-python-meeting-tf.html
 import math
 from textblob import TextBlob as tb
 
