@@ -108,3 +108,32 @@ dev.off()
 
 # Remove all the files we created since we have the data we need. 
 #remove()
+
+
+# Subset to look at no more than 20 sessions
+ip_work_Session_Sub <- ip_work_Session[which(ip_work_Session$Session > 1 & ip_work_Session$Session < 10),]
+
+
+ip_work_Session_Sub$Portion <- ip_work_Session_Sub$Anon_Annotations/ip_work_Session_Sub$Annotations
+ip_work_Session_Sub$user_ip <- with(ip_work_Session_Sub, reorder(user_ip, Portion))
+
+# Capture only proportion of anonymous 
+ip_work_Session_Sub.m <- ip_work_Session_Sub[,c(1,2,10)]
+
+# Scaled based on session number
+ip_work_Session_Sub.m <- ddply(ip_work_Session_Sub.m, .(Session), transform,rescale = scale(Portion))
+
+# Plot
+Session <- ggplot(ip_work_Session_Sub.m, aes(Session, user_ip)) + 
+	geom_tile(aes(fill = rescale),colour = "white") + 
+	scale_fill_gradient(low = "pink",high = "red") + 
+	theme (
+		axis.text.y = element_blank()
+		)
+
+
+
+
+http://www.r-bloggers.com/visualizing-the-history-of-epidemics/
+https://learnr.wordpress.com/2010/01/26/ggplot2-quick-heatmap-plotting/
+http://www.r-bloggers.com/ggplot2-quick-heatmap-plotting/
