@@ -49,9 +49,8 @@ Contribution_Type <- Contribution_by_YearMonth[,c(1,3,4)]
 Contribution_Type.m  <-melt(Contribution_Type, id.vars = c("Year"))
 
 # Density plots
- <- ggplot(Contribution_Type.m, 
-	aes(x=Year, y=log(value), group=variable, fill=variable,colour = variable))
-Contribution = 
+p <- ggplot(Contribution_Type.m,aes(x=Year, y=log(value), group=variable, fill=variable,colour = variable))
+
 p + geom_line() + 
 	ggtitle(project) +
 	theme(
@@ -66,11 +65,11 @@ pdf("NAME.pdf", height=5, width=10) # Need to change plot name
 # Plot
 dev.off()
 
+#############################################
 ########## Session Level Analysis ###########
-#										    #
 #############################################
 
-# Calculate user history work by session
+###### Calculate user history work by session ######
 ip_work_Session = ddply(Anon_Annotations, c("user_ip","Session"), summarize,
 	Annotations = length(user_name),
 	Anon_Annotations = length(which(is.na(user_name))),
@@ -83,10 +82,9 @@ ip_work_Session = ddply(Anon_Annotations, c("user_ip","Session"), summarize,
 ip_work_Session$Earliest <- as.POSIXct(ip_work_Session$Earliest, format="%Y-%m-%d %H:%M:%S")
 ip_work_Session$Recent <- as.POSIXct(ip_work_Session$Recent, format="%Y-%m-%d %H:%M:%S")
 
-
-# K-means clustering for session types
+###### K-means clustering for session types ######
 ip_work_Session <- na.omit(ip_work_Session)
-ip_work_Session.Clusters <- ip_work_Session.C[c(4,5)]
+ip_work_Session.Clusters <- ip_work_Session[c(4,5)]
 # Determine number of clusters 
 wss <- (nrow(ip_work_Session.Clusters)-1)*sum(apply(ip_work_Session.Clusters,2,var))
 
@@ -97,49 +95,40 @@ plot(1:15, wss, type="b", xlab="Number of Clusters",
   ylab="Within groups sum of squares")
 
 # K-Means Cluster Analysis. Review elbow plot to determine clusters
-fit <- kmeans(ip_work_Session.Clusters, 4)
-# Cluster means 
+fit <- kmeans(ip_work_Session.Clusters, 4) # Change variable here to fit number of clusters
+# Mean work for cluster assignments
 aggregate(ip_work_Session.Clusters,by=list(fit$cluster),FUN=mean)
-# append cluster assignment to data
+# Append cluster assignment to data
 ip_work_Session<- data.frame(ip_work_Session, fit$cluster)
 
-##### Plot for Session and Proportion Anonymous
+###### End K-means clustering ######
 
-# Subset to look at no more than 20 sessions
-# removes puncutation characters in text
-# ip_work_Session_Sub$user_ip <- gsub("[[:punct:]]", "", ip_work_Session_Sub$user_ip)
-
-
+ip_work_Session$user_ip <- with(ip_work_Session, reorder(user_ip, Session))
+ip_work_Session$Portion <- (ip_work_Session$Anon_Annotations/ip_work_Session$Annotations)
+ip_work_Session_Mix <- ip_work_Session[which(ip_work_Session$Portion < 1 & ip_work_Session$Portion > 0),]
 
 
-
-ip_work_Session_Sub <- ip_work_Session[which(ip_work_Session$Session > 1 & ip_work_Session$Session < 10),]
-ip_work_Session_Sub$Portion <- ip_work_Session_Sub$Anon_Annotations/ip_work_Session_Sub$Annotations
-ip_work_Session_Sub$user_ip <- with(ip_work_Session_Sub, reorder(user_ip, Portion))
-
-# Capture only Proportion Variable 
-ip_work_Session_Sub.m <- ip_work_Session_Sub[,c(1,2,9)]
-ip_Session_Sub.m <- ip_work_Session_Sub.m[1:2000,]
+ip_work_Session_SUB <- ip_work_Session_SUB[,c(1,2,10)]
+ip_work_Session_SUB <-  sqldf("select * from ip_work_Session_SUB where user_ip NOT IN ('181.164.245.54','86.15.139.117','69.181.239.42','76.103.66.101','77.103.95.84')")
 # Scale by session number (not necessary)
 #ip_work_Session_Sub.m <- ddply(ip_work_Session_Sub.m, .(Session), transform,rescale = scale(Portion))
 
 # Plot
-Session <- ggplot(ip_Session_Sub.m, aes(Session, user_ip)) + 
-	geom_tile(aes(fill = Portion),colour = "white") + 
-	scale_fill_gradient(low = "grey",high = "black") + 
+Session <- ggplot(ip_work_Session_SUB, aes(Session, user_ip)) + 
+	geom_tile(aes(fill = Portion)) + 
+	scale_fill_gradientn(colours = c("cyan", "black", "red"))+
+	ggtitle(project) +
 	theme (
 		axis.text.y = element_blank(),
 		axis.ticks.y = element_blank()
 		)
 
 
+#############################################
 ############ User Level Analysis ############
-#										    #
 #############################################
 
-
-
-# Calculate user history
+###### Calculate user history ######
 ip_work = ddply(Anon, c("user_ip"), summarize,
 	Annotations = length(user_name),
 	sessions=max(Session),
