@@ -51,6 +51,7 @@ Contribution_Type.m  <-melt(Contribution_Type, id.vars = c("Year"))
 # Density plots
 p <- ggplot(Contribution_Type.m,aes(x=Year, y=log(value), group=variable, fill=variable,colour = variable))
 
+# pdf("NAME.pdf", height=5, width=10) # Need to change plot name
 p + geom_line() + 
 	ggtitle(project) +
 	theme(
@@ -59,11 +60,7 @@ p + geom_line() +
 	axis.title.x=element_blank(),
 	axis.text.x = element_text(angle=34,size=10)	
 	)
-
-# Plot of contribution type by month
-pdf("NAME.pdf", height=5, width=10) # Need to change plot name
-# Plot
-dev.off()
+# dev.off()
 
 #############################################
 ########## Session Level Analysis ###########
@@ -103,17 +100,20 @@ ip_work_Session<- data.frame(ip_work_Session, fit$cluster)
 
 ###### End K-means clustering ######
 
+# Narrow data to "interesting" sessions to examine. Those who's session arent at either extreme
 ip_work_Session$user_ip <- with(ip_work_Session, reorder(user_ip, Session))
 ip_work_Session$Portion <- (ip_work_Session$Anon_Annotations/ip_work_Session$Annotations)
 ip_work_Session_Mix <- ip_work_Session[which(ip_work_Session$Portion < 1 & ip_work_Session$Portion > 0),]
+ip_work_Session_Mix$Project <- project
 
+# Export Sessions
+write.csv(ip_work_Session_Mix,"Mix[PROJECT_NAME].csv")
 
-ip_work_Session_SUB <- ip_work_Session_SUB[,c(1,2,10)]
-ip_work_Session_SUB <-  sqldf("select * from ip_work_Session_SUB where user_ip NOT IN ('181.164.245.54','86.15.139.117','69.181.239.42','76.103.66.101','77.103.95.84')")
-# Scale by session number (not necessary)
-#ip_work_Session_Sub.m <- ddply(ip_work_Session_Sub.m, .(Session), transform,rescale = scale(Portion))
+ip_work_Session_Mix <- ip_work_Session_Mix[,c(1,2,10)]
+# Remove outliers
+ip_work_Session_Mix <-  sqldf("select * from ip_work_Session_SUB where user_ip NOT IN ('ip_address','ip_address','ip_address')")
 
-# Plot
+# pdf("NAME.pdf", height=5, width=10) # Need to change plot name
 Session <- ggplot(ip_work_Session_SUB, aes(Session, user_ip)) + 
 	geom_tile(aes(fill = Portion)) + 
 	scale_fill_gradientn(colours = c("cyan", "black", "red"))+
@@ -122,7 +122,7 @@ Session <- ggplot(ip_work_Session_SUB, aes(Session, user_ip)) +
 		axis.text.y = element_blank(),
 		axis.ticks.y = element_blank()
 		)
-
+# dev.off()
 
 #############################################
 ############ User Level Analysis ############
