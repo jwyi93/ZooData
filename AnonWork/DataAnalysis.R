@@ -26,7 +26,9 @@ Anon$Session <- as.factor(Anon$Session)
 # Add variable to determine if observation falls within session range i.e., less than 30 minutes and greater than 1
 Anon$Time_Include <- ifelse(Anon$Time_Seconds <= 1799 & Anon$Time_Seconds >= 1,1,0)
 Anon_Annotations <- Anon[which(Anon$Time_Include == 1),]
-
+# creates new var
+crater$unknownUsers[is.na(crater$user_name)]<- "Unknownuser"
+crater$unknownUsers[!is.na(crater$user_name)]<- "knownuser"
 ###########  Project Level Analysis ############
 #											   #
 ################################################
