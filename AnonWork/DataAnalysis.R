@@ -115,8 +115,8 @@ ip_work_Session_Mix <- ip_work_Session_Mix[,c(1,2,10)]
 # Remove outliers
 ip_work_Session_Mix <-  sqldf("select * from ip_work_Session_SUB where user_ip NOT IN ('ip_address','ip_address','ip_address')")
 
-# pdf("NAME.pdf", height=5, width=10) # Need to change plot name
-Session <- ggplot(ip_work_Session_SUB, aes(Session, user_ip)) + 
+pdf("mixsessions.pdf", height=10, width=15) # Need to change plot name
+ggplot(ip_work_Session_SUB, aes(Session, user_ip)) + 
 	geom_tile(aes(fill = Portion)) + 
 	scale_fill_gradientn(colours = c("cyan", "black", "red"))+
 	ggtitle(project) +
@@ -124,7 +124,7 @@ Session <- ggplot(ip_work_Session_SUB, aes(Session, user_ip)) +
 		axis.text.y = element_blank(),
 		axis.ticks.y = element_blank()
 		)
-# dev.off()
+dev.off()
 
 #############################################
 ############ User Level Analysis ############
@@ -139,13 +139,12 @@ ip_work = ddply(Anon, c("user_ip"), summarize,
 	Proportion_Anon = length(which(is.na(user_name)))/length(user_name),
 	Earliest = min(datetime),
 	Recent = max(datetime),
-	Seniority = (max(datetime) - min(datetime)),
 	Joined_After = as.difftime(min(datetime) - start_date, unit=days)
 	)
 
 ip_work$Earliest <- as.POSIXct(ip_work$Earliest, format="%Y-%m-%d %H:%M:%S")
 ip_work$Recent <- as.POSIXct(ip_work$Recent, format="%Y-%m-%d %H:%M:%S")
-ip_work$Membership <- difftime(ip_work$Earliest-ip_work$Recent)
+ip_work$Membership <- (ip_work$Recent-ip_work$Earliest)
 
 # Calculate Time
 Anon$datetime3 <- strptime(x = as.character(Anon$datetime),
