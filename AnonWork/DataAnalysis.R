@@ -33,6 +33,14 @@ crater$unknownUsers[!is.na(crater$user_name)]<- "knownuser"
 #											   #
 ################################################
 
+# Data for table 1 in results on project decriptives
+Project_Start <- min(ip_work_Session$Earliest)
+Numbber_Reg_Users <- length(unique(Anon$user_name))
+Numbber_Anon_Users <- length(unique(Anon$user_ip))
+Sum_Anon_Annotations <- sum(ip_work$Anon_Annotations)
+Sum_Reg_Annotations <- sum(ip_work$Registered)
+Sum_Anon_Annotations_Beyond <- sum(ip_work_Session$Anon_Annotations[ip_work_Session$Session > 1]) # Number of anon work after first session
+
 # Anon Work/Reg Work by Month
 Contribution_by_YearMonth <- ddply(Anon_Annotations,
        .( format(datetime3, "%Y%m" )), 
@@ -50,19 +58,22 @@ Contribution_Type <- Contribution_by_YearMonth[,c(1,3,4)]
 # Melt dataset by year variable
 Contribution_Type.m  <-melt(Contribution_Type, id.vars = c("Year"))
 
-# Density plots
+# Density plots (Need to add percentages and label axis)
 p <- ggplot(Contribution_Type.m,aes(x=Year, y=log(value), group=variable, fill=variable,colour = variable))
 
-# pdf("NAME.pdf", height=5, width=10) # Need to change plot name
-p + geom_line() + 
-	ggtitle(project) +
-	theme(
-	legend.position="none",
-	axis.title.y=element_blank(),
-	axis.title.x=element_blank(),
-	axis.text.x = element_text(angle=34,size=10)	
-	)
-# dev.off()
+setwd("~/Dropbox/ZooSOCS dropbox/Papers/CSCW 2017 (AnonWork)/Anon-LaTex/figs")
+pdf("asteroid_history.pdf", height=5, width=10) # Need to change plot name
+ggplot(Contribution_Type.m) +
+    aes(Year, value, group=variable,fill=variable,colour=variable) +
+    stat_summary(fun.y="sum",geom="density",alpha=0.6) +
+    ggtitle(project) +
+    theme(
+        legend.position="none",
+        axis.title.y=element_blank(),
+        axis.title.x=element_blank(),
+        axis.text.x = element_text(size=12)	
+    )
+dev.off()
 
 #############################################
 ########## Session Level Analysis ###########
@@ -81,39 +92,33 @@ ip_work_Session = ddply(Anon_Annotations, c("user_ip","Session"), summarize,
 ip_work_Session$Earliest <- as.POSIXct(ip_work_Session$Earliest, format="%Y-%m-%d %H:%M:%S")
 ip_work_Session$Recent <- as.POSIXct(ip_work_Session$Recent, format="%Y-%m-%d %H:%M:%S")
 
-###### K-means clustering for session types ######
-ip_work_Session <- na.omit(ip_work_Session)
-ip_work_Session.Clusters <- ip_work_Session[c(4,5)]
-# Determine number of clusters 
-wss <- (nrow(ip_work_Session.Clusters)-1)*sum(apply(ip_work_Session.Clusters,2,var))
-
-# When the chart appears you need to find the sharpest increse and make that the number of clusters
-for (i in 2:15) wss[i] <- sum(kmeans(ip_work_Session.Clusters, 
-    centers=i)$withinss)
-plot(1:15, wss, type="b", xlab="Number of Clusters",
-  ylab="Within groups sum of squares")
-
-# K-Means Cluster Analysis. Review elbow plot to determine clusters
-fit <- kmeans(ip_work_Session.Clusters, 4) # Change variable here to fit number of clusters
-# Mean work for cluster assignments
-aggregate(ip_work_Session.Clusters,by=list(fit$cluster),FUN=mean)
-# Append cluster assignment to data
-ip_work_Session<- data.frame(ip_work_Session, fit$cluster)
-
-###### End K-means clustering ######
-
 # Narrow data to "interesting" sessions to examine. Those who's session arent at either extreme
 ip_work_Session$user_ip <- with(ip_work_Session, reorder(user_ip, Session))
 ip_work_Session$Portion <- (ip_work_Session$Anon_Annotations/ip_work_Session$Annotations)
 ip_work_Session_Mix <- ip_work_Session[which(ip_work_Session$Portion < 1 & ip_work_Session$Portion > 0),]
+ip_work_Session_Mix <- ip_work_Session_Mix[which(ip_work_Session_Mix$Session > 1),]
 ip_work_Session_Mix$Project <- project
 
-# Export Sessions
-write.csv(ip_work_Session_Mix,"Mix[PROJECT_NAME].csv")
+# Subset for users not in their first session
 
-ip_work_Session_Mix <- ip_work_Session_Mix[,c(1,2,10)]
-# Remove outliers
-ip_work_Session_Mix <-  sqldf("select * from ip_work_Session_SUB where user_ip NOT IN ('ip_address','ip_address','ip_address')")
+# Export Sessions for analysis and examination
+setwd("~/Desktop/Sequence/SmallSessions")
+write.csv(ip_work_Session_Mix,"MixAsteroid.csv")
+
+# Grab sessions of those in Mix[PROJECT] for sequence analysis 
+library(sqldf)
+ip_work_Session_Mix_Anon <-  sqldf("SELECT user_ip,user_name,Session,Classifications,Time_Seconds FROM Anon_Annotations WHERE EXISTS(SELECT 1 FROM ip_work_Session_Mix WHERE Anon_Annotations.user_ip = ip_work_Session_Mix.user_ip AND Anon_Annotations.Session = ip_work_Session_Mix.Session)
+")
+
+setwd("~/Desktop/Sequence/SmallSessions")
+write.csv(ip_work_Session_Mix_Anon,"MixAsteroidAnnotations.csv")
+
+
+SELECT user_ip,user_name,Session,Classifications,Time_Seconds FROM Anon_Annotations WHERE EXISTS(SELECT 1 FROM ip_work_Session_Mix WHERE Anon_Annotations.user_ip = ip_work_Session_Mix.user_ip AND Anon_Annotations.Session = ip_work_Session_Mix.Session)
+
+ip_work_Session_SUB <- ip_work_Session_Mix[,c(1,2,10)]
+# Remove outliers (If needed)
+ip_work_Session_SUB <-  sqldf("select * from ip_work_Session_SUB where user_ip NOT IN ('ip_address','ip_address','ip_address')")
 
 pdf("mixsessions.pdf", height=10, width=15) # Need to change plot name
 ggplot(ip_work_Session_SUB, aes(Session, user_ip)) + 
@@ -125,6 +130,8 @@ ggplot(ip_work_Session_SUB, aes(Session, user_ip)) +
 		axis.ticks.y = element_blank()
 		)
 dev.off()
+
+# ip_Sub_reduced
 
 #############################################
 ############ User Level Analysis ############
