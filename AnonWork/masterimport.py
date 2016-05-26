@@ -6,9 +6,9 @@ from itertools import tee, islice, chain, izip
 # This is a test
 
 ############## Import Raw datafile ##############
-%cd "PATH TO FOLDER"
+%cd "/Users/coreyjackson/Dropbox/ZooSOCS dropbox/Papers/CSCW 2017 (AnonWork)/RawData/Archive"
 
-raw_data = pd.read_csv('FILE NAME') # CHANGE NAME OF .CSV FILE
+raw_data = pd.read_csv('HiggsHuntersClassificationsAnonWork112615.csv') # CHANGE NAME OF .CSV FILE
 # Rename columns 
 anon_population = pd.DataFrame(raw_data, columns = ['_id', 'created_at', 'favorite', 'subject_ids', 'tutorial','user_id','user_ip','user_name'])
 del raw_data
@@ -77,7 +77,7 @@ session_no = []
 session = 1
 for i,j,l,m in zip(ip, ip[1:], time, time[1:]):
   #print i,j,l,m
-  if i == j and l < datetime.timedelta(minutes=30):
+  if i == j and l <= datetime.timedelta(minutes=30):
     session = session
     session_no.append(session)
   elif i == j and l > datetime.timedelta(minutes=30): 
@@ -106,8 +106,5 @@ anon_population['Time_Seconds'] = time_sec
 
 
 # Export dataframe
-%cd "PATH TO FOLDER"
-
-anon_population.to_csv('FILE NAME') #Change File name to project name. 
-
+anon_population.to_csv('HiggsHunters.csv') #Change File name to project name. 
 
