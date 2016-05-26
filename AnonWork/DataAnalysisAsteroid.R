@@ -10,11 +10,11 @@ library(reshape2)
 library(lubridate)
 
 # Set working directory to same directory where files are exported to in Python code
-setwd("~PATH TO FOLDER")
+setwd("~/Dropbox/ZooSOCS dropbox/Papers/CSCW 2017 (AnonWork)/RawData/Dataset")
 
 # Import Dataset from .csv file
-Anon <- read.csv("")
-project = Asteroid Zoo # Change Name to current project
+Anon <- read.csv("AsteroidZoo.csv")
+project = Asteroid Zoo #Change Name to current project
 
 ############ Data Munging ############
 Anon$user_name[Anon$user_name ==""]  <- NA 
@@ -24,6 +24,10 @@ Anon$Time_Include <- ifelse(Anon$Time_Seconds <= 1799 & Anon$Time_Seconds >= 1,1
 Anon_Annotations <- Anon[which(Anon$Time_Include == 1),]
 Anon_Annotations$datetime <- as.POSIXct(Anon_Annotations$datetime, format="%Y-%m-%d %H:%M:%S")
 Anon_Annotations <- completeFun(Anon_Annotations, "datetime")
+Anon$datetime3 <- strptime(x = as.character(Anon$datetime),
+        format = "%Y-%m-%d %H:%M:%S")
+Anon$datetime3 <- as.POSIXct(Anon$datetime3, format="%Y-%m-%d %H:%M:%S")
+
 ################################################
 ###########  Project Level Analysis ############
 ################################################
@@ -48,7 +52,7 @@ Contribution_by_YearMonth <- ddply(Anon_Annotations,
 		)
 
 # Rename heading 
-Contribution_by_YearMonth <- rename(Contribution_by_YearMonth,c("format(datetime3, \"%Y%m\")" = "Year"))
+Contribution_by_YearMonth <- rename(Contribution_by_YearMonth,c("format(datetime, \"%Y%m\")" = "Year"))
 Contribution_Type <- Contribution_by_YearMonth[,c(1,3,4)]
 # Melt dataset by year variable
 Contribution_Type.m  <-melt(Contribution_Type, id.vars = c("Year"))
@@ -113,11 +117,7 @@ setwd("~/Desktop/Sequence/SmallSessions")
 write.csv(ip_work_Session_Mix_Anon,"MixAsteroidAnnotations.csv")
 
 
-SELECT user_ip,user_name,Session,Classifications,Time_Seconds FROM Anon_Annotations WHERE EXISTS(SELECT 1 FROM ip_work_Session_Mix WHERE Anon_Annotations.user_ip = ip_work_Session_Mix.user_ip AND Anon_Annotations.Session = ip_work_Session_Mix.Session)
-
-ip_work_Session_SUB <- ip_work_Session_Mix[,c(1,2,10)]
-# Remove outliers (If needed)
-ip_work_Session_SUB <-  sqldf("select * from ip_work_Session_SUB where user_ip NOT IN ('ip_address','ip_address','ip_address')")
+#SELECT user_ip,user_name,Session,Classifications,Time_Seconds FROM Anon_Annotations WHERE EXISTS(SELECT 1 FROM ip_work_Session_Mix WHERE Anon_Annotations.user_ip = ip_work_Session_Mix.user_ip AND Anon_Annotations.Session = ip_work_Session_Mix.Session)
 
 pdf("mixsessions.pdf", height=10, width=15) # Need to change plot name
 ggplot(ip_work_Session_SUB, aes(Session, user_ip)) + 
@@ -135,6 +135,7 @@ dev.off()
 #############################################
 
 ###### Calculate user history ######
+
 ip_work = ddply(Anon, c("user_ip"), summarize,
 	Annotations = length(user_name),
 	sessions=max(Session),
@@ -142,15 +143,12 @@ ip_work = ddply(Anon, c("user_ip"), summarize,
 	Registered = length(which(!is.na(user_name))),
 	Proportion_Anon = length(which(is.na(user_name)))/length(user_name),
 	Earliest = min(datetime),
-	Recent = max(datetime)	
+	Recent = max(datetime)
 	)
 
 ip_work$Earliest <- as.POSIXct(ip_work$Earliest, format="%Y-%m-%d %H:%M:%S")
 ip_work$Recent <- as.POSIXct(ip_work$Recent, format="%Y-%m-%d %H:%M:%S")
-ip_work$Membership <- ip_work$Recent - ip_work$Earliest
-# Calculate Time
-#Anon$datetime3 <- strptime(x = as.character(Anon$datetime),
-#        format = "%Y-%m-%d %H:%M:%S")
+ip_work$Membership <- ip_work$Recent-ip_work$Earliest
 
 # Export Plot
 pdf("NAME.pdf", height=5, width=10) # Need to change plot name

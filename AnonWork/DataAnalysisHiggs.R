@@ -24,6 +24,9 @@ Anon$Time_Include <- ifelse(Anon$Time_Seconds <= 1799 & Anon$Time_Seconds >= 1,1
 Anon_Annotations <- Anon[which(Anon$Time_Include == 1),]
 Anon_Annotations$datetime <- as.POSIXct(Anon_Annotations$datetime, format="%Y-%m-%d %H:%M:%S")
 Anon_Annotations <- completeFun(Anon_Annotations, "datetime")
+Anon$datetime3 <- strptime(x = as.character(Anon$datetime),
+        format = "%Y-%m-%d %H:%M:%S")
+Anon$datetime3 <- as.POSIXct(Anon$datetime3, format="%Y-%m-%d %H:%M:%S")
 ################################################
 ###########  Project Level Analysis ############
 ################################################
