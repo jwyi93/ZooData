@@ -99,10 +99,11 @@ ip_work_Session$Time <- ip_work_Session$Recent- ip_work_Session$Earliest
 ip_work_Session$user_ip <- with(ip_work_Session, reorder(user_ip, Session))
 ip_work_Session$Portion <- (ip_work_Session$Anon_Annotations/ip_work_Session$Annotations)
 ip_work_Session_Mix <- ip_work_Session[which(ip_work_Session$Portion < 1 & ip_work_Session$Portion > 0),]
-ip_work_Session_Mix <- ip_work_Session_Mix[which(ip_work_Session_Mix$Session > 1),]
+#ip_work_Session_Mix <- ip_work_Session_Mix[which(ip_work_Session_Mix$Session > 1),]
 ip_work_Session_Mix$Project <- project
 
-# Subset for users not in their first session
+ip_work_Session_AnonOnly <- ip_work_Session[which(ip_work_Session$Portion == 1),]
+ip_work_Session_RegOnly <- ip_work_Session[which(ip_work_Session$Portion == 0 ),]
 
 # Export Sessions for analysis and examination
 setwd("~/Desktop/Sequence/SmallSessions")
