@@ -5,8 +5,9 @@ My repo for coding projects using data from the Zooniverse citizen science platf
 Projects I'm currently working on: 
 
 * Anonymous Contribution
-* Hashtag Evolution
-* Tracking Data
+* Hashtag Evolution 
+* Tracking Data (with )
+* Survival
 
 You can view some of our research here: [Citizen Science Research at Syracuse](http://citsci.syr.edu/papers)
 
