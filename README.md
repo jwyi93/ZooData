@@ -6,6 +6,7 @@ Two projects I'm currently working on:
 
 * Anonymous Contribution
 * Hashtag Evolution
+* Tracking Data
 
 You can view some of our research here: [Citizen Science Research at Syracuse](http://citsci.syr.edu/papers)
 
