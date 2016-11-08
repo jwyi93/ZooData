@@ -4,10 +4,11 @@ My repo for coding projects using data from the Zooniverse citizen science platf
 
 Projects I'm currently working on: 
 
-* Anonymous Contribution
+* Anonymous Contribution (Submitted to CHI)
 * Hashtag Evolution 
-* Tracking Data (with )
+* Tracking Data (with Amruta)
 * Survival
+* Gravity Spy (With Mabi)
 
 You can view some of our research here: [Citizen Science Research at Syracuse](http://citsci.syr.edu/papers)
 
