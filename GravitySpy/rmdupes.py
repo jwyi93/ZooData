@@ -1,3 +1,6 @@
+# Mabi Harandi
+# Syracuse University, 2016
+
 #### Remove duplicates from file
 def no_duplicate(filename):
    df1 = pd.read_csv(filename)
