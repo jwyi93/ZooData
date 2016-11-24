@@ -86,7 +86,6 @@ theme (
 	)
 dev.off()
 
-
 promotions_stats <- ddply(classifications_promotion, c("UserLevel"),summarise,
 	Users = length(unique(login)),
 	Neutron_Star_Mountain = sum(SubmitLevel=="Neutron Star Mountain"),
