@@ -20,6 +20,7 @@ chimp_and_see_20161023$datetime <- as.POSIXct(chimp_and_see_20161023$datetime, f
 ############ User Level Variables ############
 user <- ddply(chimp_and_see_20161023, c("user_name"), summarise,
 	classifications = length(user_name),
+	max_session = max(Session),
 	first_classification = min(datetime),
 	last_classification = max(datetime)
 	)
@@ -138,6 +139,12 @@ user_population_extended_session <- ddply(classifications_population, c("user_na
 	sessions = max(Session)
 	)
 user_population_extended_session$length <- user_population_extended_session$last_classification - user_population_extended_session$first_classification
+user_population_extended_session <- merge(user_population_extended_session, user[,c("user_name", "max_session")], by=("user_name"))
+user_population_extended_session$futuresession <-  user_population_extended_session$max_session - user_population_extended_session$Session
+user_population_extended_session$survive <-  ifelse(user_population_extended_session$futuresession > 0,1,0)
+user_population_extended_session$start <- difftime(user_population_extended_session$first_classification, "2015-04-14 14:00:48", units = "mins")
+user_population_extended_session$stop <- difftime(user_population_extended_session$last_classification, "2015-04-14 14:00:48", units = "mins")
+
 
 
 user_population_extended <- ddply(classifications_population, c("user_name"), summarise,
@@ -150,5 +157,7 @@ user_population_extended <- ddply(classifications_population, c("user_name"), su
 	accuracy = sum(accuracy)/length(user_name)
 	)
 user_population_extended$length <- user_population_extended$last_classification - user_population_extended$first_classification
+
+
 
 
