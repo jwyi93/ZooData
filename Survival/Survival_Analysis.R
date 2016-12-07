@@ -18,8 +18,13 @@ survfit()
 # https://www.openintro.org/download.php?file=survival_analysis_in_R&referrer=/stat/surv.php
 # https://www.openintro.org/stat/surv.php
 
-user_population_extended_session$start <- as.numeric(user_population_extended_session$start)
-user_population_extended_session$stop <- as.numeric(user_population_extended_session$stop)
+user_population_extended_session$start <- log(as.numeric(user_population_extended_session$start))
+user_population_extended_session$stop <- log(as.numeric(user_population_extended_session$stop))
+
+
+p <- ggplot(user_population_extended_session, aes(factor(survive), log(classifications)))
+p + geom_boxplot()
+
 
 S <- Surv(
   time = user_population_extended_session$start, 
@@ -28,7 +33,7 @@ S <- Surv(
 
 
 # Building the survival model
-model <- coxph(S ~ accuracy, 
+model <- coxph(S ~ accuracy + classifications +Session + presence_id+animal_id+number_id, 
                data = user_population_extended_session)
 
 # Plot the baseline survival function

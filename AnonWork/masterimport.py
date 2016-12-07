@@ -6,7 +6,7 @@ from itertools import tee, islice, chain, izip
 # This is a test
 
 ############## Import Raw datafile ##############
-%cd "/Users/coreyjackson/Dropbox/ZooSOCS dropbox/Papers/CSCW 2017 (AnonWork)/RawData/Archive"
+#cd "/Users/coreyjackson/Desktop/Research Projects/Anonymous Work CHI 2017/Archive"
 
 raw_data = pd.read_csv('HiggsHuntersClassificationsAnonWork112615.csv') # CHANGE NAME OF .CSV FILE
 # Rename columns 
@@ -38,7 +38,7 @@ anon_population.same_ip = anon_population.same_ip.shift(-1)
 anon_population['datetime2'] = anon_population['datetime'] 
 
 # Shifts up one removing first observation, last is NA (for datetime)
-anon_population.datetime2 = anon_population.datetime2.shift(-1)
+anon_population.datetime2 = anon_population.datetime2.shift(1)
 
 # Changes variabel to datetime variable
 anon_population['datetime'] = pd.to_datetime(anon_population['datetime'])
@@ -46,6 +46,14 @@ anon_population['datetime2'] = pd.to_datetime(anon_population['datetime2'])
 
 # Subtract time
 anon_population['timespent'] = anon_population['datetime2'] - anon_population['datetime']
+
+time = anon_population['timespent']
+time_sec = []
+for i in time:
+  timeseconds = i.total_seconds()
+  time_sec.append(timeseconds)
+anon_population['Time_Seconds'] = time_sec
+anon_population['Time_Seconds'] = anon_population['Time_Seconds']*(-1)
 
 # Function for iterating 
 def previous_and_next(some_iterable):
@@ -69,41 +77,33 @@ for previous, item, nxt in previous_and_next(ip):
 	classification_no.append(classification)
 anon_population['Classifications'] = classification_no
 
-
 # Loop to iterate and create session variable by ip address
-time = anon_population['timespent']
+time = anon_population['Time_Seconds']
 ip = anon_population['user_ip']
 session_no = []
 session = 1
 for i,j,l,m in zip(ip, ip[1:], time, time[1:]):
   #print i,j,l,m
-  if i == j and l <= datetime.timedelta(minutes=30):
+  if i == j and l <= 1800:
     session = session
     session_no.append(session)
-  elif i == j and l > datetime.timedelta(minutes=30): 
+  elif i == j and l > 1800: 
     session = session + 1
     session_no.append(session)
   else :  
     session = 1
     session_no.append(session)
+    
 
 # Check length of anon file and session list 
 len(anon_population)
 len(session_no)           
 # Add one element to beginning of list. Required for appending list
-session_no.insert(0,1)
+session_no.extend([1])
 del anon_population['datetime2']
 # Paste list to anon_population dataframe 
 anon_population['Session'] = session_no
 #anon_population.Session = anon_population.Session.shift(-1)
-
-time = anon_population['timespent']
-time_sec = []
-for i in time:
-  timeseconds = i.total_seconds()
-  time_sec.append(timeseconds)
-anon_population['Time_Seconds'] = time_sec
-
 
 # Export dataframe
 anon_population.to_csv('HiggsHunters.csv') #Change File name to project name. 

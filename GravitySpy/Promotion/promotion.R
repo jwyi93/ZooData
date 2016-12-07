@@ -94,6 +94,11 @@ promotions_stats <- ddply(classifications_promotion, c("UserLevel"),summarise,
 	Black_Hole_Merger = sum(SubmitLevel=="Black Hole Merger"),
 	Universe_Cosmic_Background = sum(SubmitLevel=="Universe Cosmic Background"))
 
+promotion_user <- ddply(classifications_promotion, c("login","UserLevel"),summarise,
+	Date = min(Date),
+	Classification = min(Classifications),
+	Session = min(Session))
+
 
 
 
