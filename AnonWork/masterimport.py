@@ -32,7 +32,7 @@ anon_population = anon_population.sort_values(['user_ip','datetime'], ascending=
 anon_population['same_ip'] = anon_population['user_ip'].shift() == anon_population['user_ip']
 
 # Shifts up one removing first observation, last is NA (for ip)
-anon_population.same_ip = anon_population.same_ip.shift(-1)
+#anon_population.same_ip = anon_population.same_ip.shift(-1)
 
 # Makes new column for datetime 
 anon_population['datetime2'] = anon_population['datetime'] 
@@ -80,20 +80,20 @@ anon_population['Classifications'] = classification_no
 # Loop to iterate and create session variable by ip address
 time = anon_population['Time_Seconds']
 ip = anon_population['user_ip']
+same = anon_population['same_ip']
 session_no = []
 session = 1
-for i,j,l,m in zip(ip, ip[1:], time, time[1:]):
-  #print i,j,l,m
-  if i == j and l <= 1800:
+for i,j,l,m,n in zip(ip, ip[1:], time, time[1:],same):
+  #print i,j,l,m,n
+  if n == True and l <= 1800:
     session = session
     session_no.append(session)
-  elif i == j and l > 1800: 
+  elif n == True and l > 1800: 
     session = session + 1
     session_no.append(session)
   else :  
     session = 1
     session_no.append(session)
-    
 
 # Check length of anon file and session list 
 len(anon_population)
