@@ -8,7 +8,7 @@ Projects I'm currently working on:
 * Hashtag Evolution 
 * Tracking Data (with Amruta)
 * Survival
-* Gravity Spy ([Mabi Harandi] https://github.com/Harandi6135)
+* Gravity Spy ([Mabi Harandi](https://github.com/Harandi6135))
 
 You can view some of our research here: [Citizen Science Research at Syracuse](http://citsci.syr.edu/papers)
 
