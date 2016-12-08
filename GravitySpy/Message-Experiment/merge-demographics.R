@@ -1,7 +1,6 @@
 # Corey Jackson
 # Syracuse University 2016
 
-
 # Merge three files 
 # 1. gravity.spy.experiment with experiment assignment (login name no userID though)
 # 2. GS_id_login has login name and userID

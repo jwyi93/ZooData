@@ -4,8 +4,6 @@
 import pandas as pd
 import re
 
-
-
 def no_duplicate(filename):
     df1 = pd.read_csv(filename)
     df2 = df1.drop_duplicates(subset= ['userID', 'timeToClass'])

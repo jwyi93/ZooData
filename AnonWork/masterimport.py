@@ -94,10 +94,7 @@ for i,j,l,m,n in zip(ip, ip[1:], time, time[1:],same):
   else :  
     session = 1
     session_no.append(session)
-
-# Check length of anon file and session list 
-len(anon_population)
-len(session_no)           
+          
 # Add one element to beginning of list. Required for appending list
 session_no.extend([1])
 del anon_population['datetime2']
@@ -109,8 +106,14 @@ anon_population['Session'] = session_no
 anon_population.to_csv('HiggsHunters_ALL.csv') #Change File name to project name. 
 
 
-
-
+#################################################
+#
+#
+#
+#           Need to re-cal for only known sessions 
+#
+#
+#
 ##################### Pt 2. #####################
 # Remove blank user names 
 anon_known = anon_population.dropna(subset=['user_name'])
@@ -185,8 +188,8 @@ for i,j,l,m,n in zip(ip, ip[1:], time, time[1:],same):
     session_no.append(session)
 
 # Check length of anon file and session list 
-len(anon_known)
-len(session_no)           
+#len(anon_known)
+#len(session_no)           
 # Add one element to beginning of list. Required for appending list
 session_no.extend([1])
 del anon_known['datetime2']
