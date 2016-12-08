@@ -1,21 +1,18 @@
 # Corey Jackson
 # Syracuse University 2016
+# File 1 of 2
 
 
 ## Promotion Analysis for Gravity Spy
 # After users are promoted do they still do analysis in other workflows
 
-classifications <- read.csv("~/Dropbox/INSPIRE/Data/Promotion Analysis/classifications.csv")
+classifications <- read.csv("~/Dropbox/INSPIRE/Data/Message Experiment/BaseFile/Gs_Class_Message_20161206-no-duplicate-SessClass.csv")
 
 library(plyr)
 library(reshape2)
+library(ggplot2)
 
-classifications$year <- substring(classifications$start, 2, 11)
-classifications$time <- substring(classifications$start, 13, 20)
-classifications$Date <- paste(classifications$year,classifications$time) # Automatically converts to date
-classifications$Date <- as.POSIXct(as.character(classifications$Date),format="%Y-%m-%d %H:%M:%S") 
-classifications$year <- NULL
-classifications$time <- NULL
+classifications$Date <- as.POSIXct(as.character(classifications$datetime),format="%m/%d/%y %H:%M") 
 
 # Generate file with user workflow name and promotion date
 promotions <- ddply(classifications, c("userID","workflow"),summarise,
@@ -58,7 +55,8 @@ classifications <- merge(classifications,promotions2117[, c("userID","promotion2
 
 #### Code wouldn't work because of dates so exported to Excel to get level user was in when annotation submitted  !!!!!!!
 write.csv(classifications, "classifications_promotion.csv")
-#=IF(AF2>=AK2,"Universe Cosmic Background",IF(AF2>=AJ2,"Black Hole Merger",IF(AF2>=AI2,"Neutron Star Merger",IF(AF2>=AH2,"Galactic Supernova",IF(AF2>=AG2,"Neutron Star Mountain",1)))))
+#=IF(AE2>=AP2,"Universe Cosmic Background",IF(AE2>=AO2,"Black Hole Merger",IF(AE2>=AN2,"Neutron Star Merger",IF(AE2>=AM2,"Galactic Supernova",IF(AE2>=AL2,"Neutron Star Mountain",1)))))
+
 
 ## Not working. Date Error
 #classifications$UserLevel <- ifelse(as.POSIXct(classifications$datetime) >= as.POSIXct(classifications$promotion2117),"Universe Cosmic Background",
@@ -67,7 +65,7 @@ write.csv(classifications, "classifications_promotion.csv")
 #                ifelse(as.POSIXct(classifications$datetime) >= as.POSIXct(classifications$promotions1934), "Galactic Supernova","Neutron Star Mountain"))))
 
 # Re-import file with userlevel
-classifications_promotion <- read.csv("~/Desktop/MessageExperiment/classifications_promotion.csv")
+classifications_promotion <- read.csv("~/Dropbox/INSPIRE/Data/Promotion Analysis/classifications_promotion.csv")
 classifications_promotion$workflow <- as.factor(classifications_promotion$workflow)
 
 # Recode new Variables
@@ -93,6 +91,8 @@ promotions_stats <- ddply(classifications_promotion, c("UserLevel"),summarise,
 	Neutron_Star_Merger = sum(SubmitLevel=="Neutron Star Merger"),
 	Black_Hole_Merger = sum(SubmitLevel=="Black Hole Merger"),
 	Universe_Cosmic_Background = sum(SubmitLevel=="Universe Cosmic Background"))
+
+classifications_promotion$Date <- as.POSIXct(as.character(classifications_promotion$Date),format="%m/%d/%y %H:%M") 
 
 promotion_user <- ddply(classifications_promotion, c("login","UserLevel"),summarise,
 	Date = min(Date),
