@@ -1,0 +1,114 @@
+---
+title: "Promotion"
+author: "CoreyJackson"
+date: "11/24/2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(Rmisc)
+library(psych)
+library(plyr)
+library(dplyr)
+library(magrittr)
+library(ggthemes)
+library(scales)
+
+classifications_promotion <- read.csv("~/Dropbox/INSPIRE/Data/Promotion Analysis/classifications_promotion.csv")
+
+```
+
+## Promotion Analysis for Gravity Spy Users
+
+Data taken from October 12 2016 - November 1 2016
+
+```{r setup2, include=FALSE}
+classifications_promotion$SubmitLevel[classifications_promotion$workflow == "1610"] <- "Neutron Star Mountain (NSM)"
+classifications_promotion$SubmitLevel[classifications_promotion$workflow == "1934"] <- "Galactic Supernova (GS)"
+classifications_promotion$SubmitLevel[classifications_promotion$workflow == "1935"] <- "Neutron Star Merger (NSM2)"
+classifications_promotion$SubmitLevel[classifications_promotion$workflow == "2360"] <- "Black Hole Merger (BHM)"
+classifications_promotion$SubmitLevel[classifications_promotion$workflow == "2117"] <- "Universe Cosmic Background (UCB)"
+
+```
+
+Summary statistics for users. 
+
+1610: Neutron Star Mountain  
+1934: Galactic Supernova  
+1935: Neutron Star Merger  
+2360: Black Hole Merger  
+2117: Universe Cosmic Background  
+
+```{r pressure, echo=FALSE}
+
+classifications_promotion$UserLevel <- factor(classifications_promotion$UserLevel, levels= c("Neutron Star Mountain","Galactic Supernova","Neutron Star Merger","Black Hole Merger","Universe Cosmic Background"))
+  
+promotions_stats <- ddply(classifications_promotion, c("UserLevel"),summarise,
+	Users = length(unique(login)),
+	NSM = sum(SubmitLevel=="Neutron Star Mountain (NSM)"),
+	GS = sum(SubmitLevel=="Galactic Supernova (GS)"),
+	NSM2 = sum(SubmitLevel=="Neutron Star Merger (NSM2)"),
+	BHM = sum(SubmitLevel=="Black Hole Merger (BHM)"),
+	UCB = sum(SubmitLevel=="Universe Cosmic Background (UCB)"))
+
+promotions_stats2 <- ddply(classifications_promotion, c("UserLevel"),summarise,
+	Users = length(unique(login)),
+	Class_Mean = mean(Classifications),
+	Class_Med = median(Classifications),
+	Sess_Mean = mean(Session),
+	Sess_Med = median(Session)
+	)
+
+promotions_stats3 <- ddply(classifications_promotion, c("login","UserLevel"),summarise,
+	Level_Classifications = length(login),
+	Min_Classification = min(Classifications),
+	Max_Classification = max(Classifications),
+	Session_Achieved = min(Session),
+	Max_Session = max(Session),
+	NSM = sum(SubmitLevel=="Neutron Star Mountain (NSM)"),
+	GS = sum(SubmitLevel=="Galactic Supernova (GS)"),
+	NSM2 = sum(SubmitLevel=="Neutron Star Merger (NSM2)"),
+	BHM = sum(SubmitLevel=="Black Hole Merger (BHM)"),
+	UCB = sum(SubmitLevel=="Universe Cosmic Background (UCB)")
+	)
+
+df.summary = classifications_promotion %>% group_by(SubmitLevel, UserLevel) %>% 
+  summarise(Classifications = length(Classifications)) %>%   # Within each Brand, sum all values in each Category
+  mutate( pos = cumsum(Classifications)-0.5*Classifications)
+df.summary$UserLevel <- factor(df.summary$UserLevel, levels= c("Neutron Star Mountain","Galactic Supernova","Neutron Star Merger","Black Hole Merger","Universe Cosmic Background"))
+  
+
+df.summary2 = classifications_promotion %>% group_by(SubmitLevel,UserLevel) %>%
+  summarise(Classifications = length(Classifications)) %>%   # Within each Brand, sum all values in each Category
+  mutate(percent = Classifications/sum(Classifications),
+       pos = cumsum(percent) - 0.5*percent)
+df.summary2$UserLevel <- factor(df.summary2$UserLevel, levels= c("Neutron Star Mountain","Galactic Supernova","Neutron Star Merger","Black Hole Merger","Universe Cosmic Background"))
+  
+```
+
+
+```{r promotion, echo=TRUE}
+promotions_stats
+```
+
+The average work to achieve a workflow. Classifications and Session represent the average number which appears as the minimum for the classification at a level. Likely over estimated in some cases since users might not know when they've reached a new level. 
+
+```{r promotion2, echo=TRUE}
+promotions_stats2
+```
+
+
+Read as: 
+"The number of annotations in the [insert y-axis workflow] were submitted by N individuals in [insert bar portion]"
+
+```{r promotion3, echo=TRUE}
+df.summary2$UserLevel <- factor(df.summary2$UserLevel, levels= c("Neutron Star Mountain","Galactic Supernova","Neutron Star Merger","Black Hole Merger","Universe Cosmic Background"))
+ggplot(df.summary2, aes(x=UserLevel, y=Classifications, fill=SubmitLevel)) +
+  scale_y_continuous() +
+  geom_bar(stat='identity',  width = .7, colour="black", lwd=0.1) +
+  coord_flip()+
+  labs(y="Count of Annotations Submitted", x="User Level when annotation submitted")
+
+```
