@@ -6,7 +6,7 @@
 ## Promotion Analysis for Gravity Spy
 # After users are promoted do they still do analysis in other workflows
 
-classifications <- read.csv("~/Dropbox/INSPIRE/Data/Message Experiment/BaseFile/Gs_Class_Message_20161206-no-duplicate-SessClass.csv")
+classifications <- read.csv("~/Dropbox/INSPIRE/Data/System dumps/Classifications_GS/Classifications_2016_11-no-duplicate.csv")
 
 library(plyr)
 library(reshape2)
