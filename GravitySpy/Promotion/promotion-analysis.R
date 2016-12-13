@@ -12,7 +12,13 @@ library(plyr)
 library(reshape2)
 library(ggplot2)
 
-classifications$Date <- as.POSIXct(as.character(classifications$datetime),format="%m/%d/%y %H:%M") 
+classifications$year <- substring(classifications$created_at, 1, 10)
+classifications$time <- substring(classifications$created_at, 12, 19)
+classifications$Date <- paste(classifications$year,classifications$time) # Automatically converts to date
+classifications$Date <- as.POSIXct(as.character(classifications$Date),format="%Y-%m-%d %H:%M:%S") 
+classifications$year <- NULL
+classifications$time <- NULL
+#classifications$Date <- as.POSIXct(as.character(classifications$datetime),format="%m/%d/%y %H:%M") 
 
 # Generate file with user workflow name and promotion date
 promotions <- ddply(classifications, c("userID","workflow"),summarise,
