@@ -55,6 +55,7 @@ classifications <- merge(classifications,promotions2117[, c("userID","promotion2
 	by=("userID"), all.x=TRUE)
 
 #### Code wouldn't work because of dates so exported to Excel to get level user was in when annotation submitted  !!!!!!!
+setwd("~/Dropbox/INSPIRE/Data/Promotion Analysis/")
 write.csv(classifications, "classifications_promotion.csv")
 #=IF(AE2>=AP2,"Universe Cosmic Background",IF(AE2>=AO2,"Black Hole Merger",IF(AE2>=AN2,"Neutron Star Merger",IF(AE2>=AM2,"Galactic Supernova",IF(AE2>=AL2,"Neutron Star Mountain",1)))))
 
