@@ -15,5 +15,5 @@ def no_duplicate(filename):
         df2.to_csv(output, sep=',')
 
 #filename = "classifications_with_timestamp.csv"
-filename = "classifications_2016_11.csv"
+filename = "gravity-spy-classifications_2016_12.csv"
 no_duplicate(filename)

@@ -17,6 +17,7 @@ library(ggthemes)
 library(scales)
 
 classifications_promotion <- read.csv("~/Dropbox/INSPIRE/Data/Promotion Analysis/classifications_promotion.csv")
+classifications_promotion <- classifications_promotion[ which(classifications_promotion$UserLevel!=1), ]
 
 ```
 
@@ -31,6 +32,15 @@ classifications_promotion$SubmitLevel[classifications_promotion$workflow == "193
 classifications_promotion$SubmitLevel[classifications_promotion$workflow == "2360"] <- "Black Hole Merger (BHM)"
 classifications_promotion$SubmitLevel[classifications_promotion$workflow == "2117"] <- "Universe Cosmic Background (UCB)"
 
+classifications_promotion$UserLevel <- factor(classifications_promotion$UserLevel, levels= c("Neutron Star Mountain","Galactic Supernova","Neutron Star Merger","Black Hole Merger","Universe Cosmic Background"))
+classifications_promotion$Date <- as.POSIXct(as.character(classifications_promotion$datetime),format="%m/%d/%y %H:%M") 
+
+promotion_user <- ddply(classifications_promotion, c("user_name","UserLevel"),summarise,
+	Date = min(Date),
+	Classification = min(as.numeric(Classifications)),
+	Session = min(as.numeric(Session))
+	)
+
 ```
 
 Summary statistics for users. 
@@ -43,26 +53,26 @@ Summary statistics for users.
 
 ```{r pressure, echo=FALSE}
 
-classifications_promotion$UserLevel <- factor(classifications_promotion$UserLevel, levels= c("Neutron Star Mountain","Galactic Supernova","Neutron Star Merger","Black Hole Merger","Universe Cosmic Background"))
+
   
 promotions_stats <- ddply(classifications_promotion, c("UserLevel"),summarise,
-	Users = length(unique(login)),
-	NSM = sum(SubmitLevel=="Neutron Star Mountain (NSM)"),
-	GS = sum(SubmitLevel=="Galactic Supernova (GS)"),
-	NSM2 = sum(SubmitLevel=="Neutron Star Merger (NSM2)"),
-	BHM = sum(SubmitLevel=="Black Hole Merger (BHM)"),
-	UCB = sum(SubmitLevel=="Universe Cosmic Background (UCB)"))
+	Users = length(unique(user_name)),
+	NSM = sum(SubmitLevel=="Neutron Star Mountain (NSM)", na.rm = TRUE),
+	GS = sum(SubmitLevel=="Galactic Supernova (GS)",na.rm = TRUE),
+	NSM2 = sum(SubmitLevel=="Neutron Star Merger (NSM2)",na.rm = TRUE),
+	BHM = sum(SubmitLevel=="Black Hole Merger (BHM)",na.rm = TRUE),
+	UCB = sum(SubmitLevel=="Universe Cosmic Background (UCB)",na.rm = TRUE))
 
-promotions_stats2 <- ddply(classifications_promotion, c("UserLevel"),summarise,
-	Users = length(unique(login)),
-	Class_Mean = mean(Classifications),
-	Class_Med = median(Classifications),
-	Sess_Mean = mean(Session),
+promotions_stats2 <- ddply(promotion_user, c("UserLevel"),summarise,
+	Users = length(unique(user_name)),
+	Class_Mean = round(mean(Classification),2),
+	Class_Med = median(Classification),
+	Sess_Mean = round(mean(Session),2),
 	Sess_Med = median(Session)
 	)
 
-promotions_stats3 <- ddply(classifications_promotion, c("login","UserLevel"),summarise,
-	Level_Classifications = length(login),
+promotions_stats3 <- ddply(classifications_promotion, c("user_name","UserLevel"),summarise,
+	Level_Classifications = length(user_name),
 	Min_Classification = min(Classifications),
 	Max_Classification = max(Classifications),
 	Session_Achieved = min(Session),

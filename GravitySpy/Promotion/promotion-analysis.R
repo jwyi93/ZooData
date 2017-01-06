@@ -12,7 +12,7 @@ library(plyr)
 library(reshape2)
 library(ggplot2)
 
-classifications$Date <- as.POSIXct(as.character(classifications$datetime),format="%m/%d/%y %H:%M") 
+classifications$Date <- as.POSIXct(as.character(classifications$datetime),format="%Y-%m-%d %H:%M:%S") 
 
 # Generate file with user workflow name and promotion date
 promotions <- ddply(classifications, c("userID","workflow"),summarise,
@@ -68,6 +68,7 @@ write.csv(classifications, "classifications_promotion.csv")
 
 # Re-import file with userlevel
 classifications_promotion <- read.csv("~/Dropbox/INSPIRE/Data/Promotion Analysis/classifications_promotion.csv")
+classifications_promotion <- classifications_promotion[ which(classifications_promotion$UserLevel!=1), ]
 classifications_promotion$workflow <- as.factor(classifications_promotion$workflow)
 
 # Recode new Variables
@@ -86,20 +87,25 @@ theme (
 	)
 dev.off()
 
+classifications_promotion$UserLevel <- factor(classifications_promotion$UserLevel, levels = c("Neutron Star Mountain","Galactic Supernova",
+      "Neutron Star Merger","Black Hole Merger","Universe Cosmic Background"))
+
 promotions_stats <- ddply(classifications_promotion, c("UserLevel"),summarise,
-	Users = length(unique(login)),
-	Neutron_Star_Mountain = sum(SubmitLevel=="Neutron Star Mountain"),
-	Galactic_Supernova = sum(SubmitLevel=="Galactic Supernova"),
-	Neutron_Star_Merger = sum(SubmitLevel=="Neutron Star Merger"),
-	Black_Hole_Merger = sum(SubmitLevel=="Black Hole Merger"),
-	Universe_Cosmic_Background = sum(SubmitLevel=="Universe Cosmic Background"))
+	Users = length(unique(user_name)),
+	Neutron_Star_Mountain = sum(SubmitLevel=="Neutron Star Mountain",na.rm=TRUE),
+	Galactic_Supernova = sum(SubmitLevel=="Galactic Supernova",na.rm=TRUE),
+	Neutron_Star_Merger = sum(SubmitLevel=="Neutron Star Merger",na.rm=TRUE),
+	Black_Hole_Merger = sum(SubmitLevel=="Black Hole Merger",na.rm=TRUE),
+	Universe_Cosmic_Background = sum(SubmitLevel=="Universe Cosmic Background",na.rm=TRUE)
+	)
 
-classifications_promotion$Date <- as.POSIXct(as.character(classifications_promotion$Date),format="%m/%d/%y %H:%M") 
+classifications_promotion$Date <- as.POSIXct(as.character(classifications_promotion$datetime),format="%m/%d/%y %H:%M") 
 
-promotion_user <- ddply(classifications_promotion, c("login","UserLevel"),summarise,
+promotion_user <- ddply(classifications_promotion, c("user_name","UserLevel"),summarise,
 	Date = min(Date),
 	Classification = min(Classifications),
-	Session = min(Session))
+	Session = min(Session)
+	)
 
 
 
