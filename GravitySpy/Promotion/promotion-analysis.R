@@ -54,6 +54,22 @@ promotions2117 <- rename(promotions2117, replace = c("Date" = "promotion2117"))
 classifications <- merge(classifications,promotions2117[, c("userID","promotion2117")], 
 	by=("userID"), all.x=TRUE)
 
+
+#promotions1610$Type <- "Neutron Star Mountain"
+#promotions1934$Type <- "Galactic Supernova"
+#promotions2360$Type <- "Black Hole Merger"
+#promotions2117$Type <- "Universe Cosmic Background"
+#promotions1935$Type <- "Neutron Star Merger"
+
+#promotions1610 <- rename(promotions1610, replace = c("promotion1610" = "Date"))
+#promotions1934 <- rename(promotions1934, replace = c("promotion1934" = "Date"))
+#promotions2360 <- rename(promotions2360, replace = c("promotion2360" = "Date"))
+#promotions2117 <- rename(promotions2117, replace = c("promotion2117" = "Date"))
+#promotions1935 <- rename(promotions1935, replace = c("promotion1935" = "Date"))
+
+#promotion_dates <- rbind(promotions1610,promotions1934,promotions2360,promotions2117,promotions1935)
+#write.csv(promotion_dates, "promotion_dates.csv")
+
 #### Code wouldn't work because of dates so exported to Excel to get level user was in when annotation submitted  !!!!!!!
 setwd("~/Dropbox/INSPIRE/Data/Promotion Analysis/")
 write.csv(classifications, "classifications_promotion.csv")

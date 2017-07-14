@@ -11,7 +11,7 @@ from itertools import tee, islice, chain, izip
 ############## Import Raw datafile ##############
 #cd "/Users/coreyjackson/Desktop/Research Projects/Anonymous Work CHI 2017/Archive"
 
-raw_data = pd.read_csv('gravity-spy-classifications.csv') # CHANGE NAME OF .CSV FILE
+raw_data = pd.read_csv('gs_classifications21617.csv') # CHANGE NAME OF .CSV FILE
 # Rename columns 
 #anon_population = pd.DataFrame(raw_data, columns = ['_id', 'created_at', 'favorite', 'subject_ids', 'tutorial','user_id','user_ip','user_name'])
 #del raw_data
